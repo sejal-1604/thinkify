@@ -60,7 +60,7 @@ const Footer = () => {
           </Grid>
           <Grid item xs={2}>
             <Typography variant="subtitle1" fontWeight="bold">
-              Products
+              Community
             </Typography>
             <List>
               <ListItemButton sx={{padding:"0","&:hover": { backgroundColor: "transparent" }}} component={Link} to="/community">
