@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import UserModel from "../models/userSchema.js"
 import PostModel from '../models/postSchema.js';
-import ProductModel from '../models/productSchema.js';
+
 import TaskModel from '../models/taskSchema.js';
 
 const registration = [
@@ -95,12 +95,12 @@ const getUserData = async (req, res) => {
         const userId = req.user._id;
 
         const totalPosts = await PostModel.countDocuments({ authorId: userId });
-        const totalProducts = await ProductModel.countDocuments({ authorId: userId });
+
         const ongoingTasks = await TaskModel.countDocuments({ authorId: userId, taskStatus: 'ongoing' });
 
         const user = req.user.toObject();
         user.totalPosts = totalPosts;
-        user.totalProducts = totalProducts;
+
         user.ongoingTasks = ongoingTasks;
 
         res.status(200).json({ status: true, message: "Data Fetched Successfully", user });
@@ -214,7 +214,6 @@ const getUserActivity = async (req, res) => {
 
     const [
       posts,
-      products,
       tasksCreated,
       updatedTasks,
       commentsAgg,
@@ -222,7 +221,6 @@ const getUserActivity = async (req, res) => {
       userDoc,
     ] = await Promise.all([
       PostModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
-      ProductModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
       TaskModel.find({ authorId: userId, ...dateFilter }, "createdAt"),
       TaskModel.find({
         authorId: userId,
@@ -296,7 +294,7 @@ const getUserActivity = async (req, res) => {
     };
 
     countByDate(posts);
-    countByDate(products);
+
     countByDate(tasksCreated);
     countByDate(updatedTasks, "updatedAt");
 

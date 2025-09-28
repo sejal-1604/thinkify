@@ -9,17 +9,16 @@ import UserSideBar from "../layouts/UserSideBar";
 import TaskManager from "../pages/TaskManager";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import AddProduct from "../pages/AddProduct";
+
 import AdminSideBar from "../layouts/AdminSideBar";
 import NotFound from "../pages/NotFound";
 import Setting from "../pages/Setting";
 import Users from "../pages/dashboard/Users";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Post from "../pages/Post";
-import MyProduct from "../pages/MyProduct";
+
 import PublicRoute from "../layouts/PublicRoute";
-import Product from "../pages/Product";
-import Subscription from "../pages/Subscription";
+
 
 const router = createBrowserRouter([
   {
@@ -70,22 +69,7 @@ const router = createBrowserRouter([
       </>
     ),
   },
-  {
-    path: "/add-product",
-    element: (
-      <UserSideBar>
-        <AddProduct />
-      </UserSideBar>
-    ),
-  },
-  {
-    path: "/my-product",
-    element: (
-      <UserSideBar>
-        <MyProduct />
-      </UserSideBar>
-    ),
-  },
+
   {
     path: "/setting",
     element: (
@@ -102,17 +86,7 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-  {
-    path: "/products/:productId",
-    element: (
-      <PublicRoute>
-        <Product />
-      </PublicRoute>
-    ),
-  },{
-path:"/subscription",
-element: <PublicRoute><Subscription /></PublicRoute>
-  },{
+{
     path: "/dashboard",
     element: <AdminSideBar />,
     children: [

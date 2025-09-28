@@ -14,7 +14,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -24,7 +24,7 @@ import Cookies from "js-cookie";
 import useThinkify from "../hooks/useThinkify";
 import AlertBox from "../../components/common/AlertBox";
 import { useEffect } from "react";
-import SellIcon from '@mui/icons-material/Sell';
+
 
 const UserSideBar = ({ children }) => {
   const navigate = useNavigate();
@@ -48,16 +48,7 @@ const UserSideBar = ({ children }) => {
       url: "/add-post",
       icon: <AddBoxIcon />,
     },
-    {
-      label: "Add Product",
-      url: "/add-product",
-      icon: <AddShoppingCartIcon />,
-    },
-    {
-      label: "My Product",
-      url: "/my-product",
-      icon: <SellIcon />,
-    },
+
     {
       label: "Task Manager",
       url: "/task-management",
