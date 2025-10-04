@@ -1,11 +1,11 @@
-import { Box, Typography, TextField, Button, Divider } from "@mui/material";
+import { Box, Typography, TextField, Button, Divider, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import useThinkify from "../hooks/useThinkify";
 import AlertBox from "../../components/common/AlertBox";
@@ -21,6 +21,17 @@ const schema = yup.object().shape({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
+  role: yup.string().required("Role is required"),
+  department: yup.string().when("role", {
+    is: "teacher",
+    then: (schema) => schema.required("Department is required for teachers"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  studentId: yup.string().when("role", {
+    is: "student", 
+    then: (schema) => schema.required("Student ID is required for students"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 const Registration = () => {
@@ -28,19 +39,29 @@ const Registration = () => {
   const navigate = useNavigate();
   const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
     useThinkify();
+  
+  // Role state for conditional fields
+  const [selectedRole, setSelectedRole] = useState("");
   // form validation
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       fullName: "",
       email: "",
       password: "",
+      role: "",
+      department: "",
+      studentId: "",
     },
     resolver: yupResolver(schema),
   });
+  
+  // Watch role field for conditional rendering
+  const watchedRole = watch("role");
   // form submit
   const onSubmit = async (data) => {
     try {
@@ -57,8 +78,10 @@ const Registration = () => {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
         });
-        if (response.data.user.role === "user") {
+        if (response.data.user.role === "student") {
           navigate("/profile");
+        } else if (response.data.user.role === "teacher") {
+          navigate("/teacher/dashboard");
         } else if (response.data.user.role === "admin") {
           navigate("/dashboard");
         } else {
@@ -87,8 +110,10 @@ const Registration = () => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
-      if (role === "user") {
+      if (role === "student") {
         navigate("/profile");
+      } else if (role === "teacher") {
+        navigate("/teacher/dashboard");
       } else if (role === "admin") {
         navigate("/dashboard");
       }
@@ -204,6 +229,149 @@ const Registration = () => {
                 >
                   {errors.email.message}
                 </Typography>
+              )}
+              
+              {/* Role Selection */}
+              <FormControl 
+                fullWidth 
+                sx={{ 
+                  mb: 1,
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "white",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "white",
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "white",
+                    "&.Mui-focused": {
+                      color: "white",
+                    },
+                  },
+                  "& .MuiSelect-select": {
+                    color: "white",
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "white",
+                  },
+                }}
+              >
+                <InputLabel>Select Role</InputLabel>
+                <Select
+                  {...register("role", { required: true })}
+                  label="Select Role"
+                  value={watchedRole}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: "#1b2e35",
+                        "& .MuiMenuItem-root": {
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          },
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="student">Student</MenuItem>
+                  <MenuItem value="teacher">Teacher</MenuItem>
+                  <MenuItem value="admin">Admin</MenuItem>
+                </Select>
+              </FormControl>
+              {errors.role && (
+                <Typography
+                  variant="p"
+                  component="p"
+                  sx={{ color: "red", mb: 2 }}
+                >
+                  {errors.role.message}
+                </Typography>
+              )}
+              
+              {/* Conditional Fields */}
+              {watchedRole === "teacher" && (
+                <>
+                  <TextField
+                    fullWidth
+                    placeholder="Enter Department"
+                    sx={{
+                      mb: 1,
+                      color: "white",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "white",
+                        },
+                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "white",
+                        },
+                      },
+                      "& .MuiInputLabel-outlined": {
+                        color: "white",
+                      },
+                      "& .MuiInputBase-input": {
+                        "&::placeholder": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                    {...register("department")}
+                  />
+                  {errors.department && (
+                    <Typography
+                      variant="p"
+                      component="p"
+                      sx={{ color: "red", mb: 2 }}
+                    >
+                      {errors.department.message}
+                    </Typography>
+                  )}
+                </>
+              )}
+              
+              {watchedRole === "student" && (
+                <>
+                  <TextField
+                    fullWidth
+                    placeholder="Enter Student ID"
+                    sx={{
+                      mb: 1,
+                      color: "white",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "white",
+                        },
+                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "white",
+                        },
+                      },
+                      "& .MuiInputLabel-outlined": {
+                        color: "white",
+                      },
+                      "& .MuiInputBase-input": {
+                        "&::placeholder": {
+                          color: "white",
+                        },
+                      },
+                    }}
+                    {...register("studentId")}
+                  />
+                  {errors.studentId && (
+                    <Typography
+                      variant="p"
+                      component="p"
+                      sx={{ color: "red", mb: 2 }}
+                    >
+                      {errors.studentId.message}
+                    </Typography>
+                  )}
+                </>
               )}
               <TextField
                 fullWidth

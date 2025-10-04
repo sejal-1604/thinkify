@@ -11,11 +11,21 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 import AdminSideBar from "../layouts/AdminSideBar";
+import TeacherSideBar from "../layouts/TeacherSideBar";
 import NotFound from "../pages/NotFound";
 import Setting from "../pages/Setting";
 import Users from "../pages/dashboard/Users";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Post from "../pages/Post";
+
+// Teacher Pages
+import TeacherDashboard from "../pages/teacher/TeacherDashboard";
+import Assignments from "../pages/teacher/Assignments";
+import Polls from "../pages/teacher/Polls";
+import Resources from "../pages/teacher/Resources";
+
+// Protected Route Components
+import ProtectedRoute, { TeacherOnlyRoute, AdminOnlyRoute, StudentOnlyRoute } from "../components/ProtectedRoute";
 
 import PublicRoute from "../layouts/PublicRoute";
 
@@ -36,46 +46,54 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: (
-      <UserSideBar>
-        <Profile />
-      </UserSideBar>
+      <StudentOnlyRoute>
+        <UserSideBar>
+          <Profile />
+        </UserSideBar>
+      </StudentOnlyRoute>
     ),
   },
   {
     path: "/my-post",
     element: (
-      <UserSideBar>
-        <MyPost />
-      </UserSideBar>
+      <StudentOnlyRoute>
+        <UserSideBar>
+          <MyPost />
+        </UserSideBar>
+      </StudentOnlyRoute>
     ),
   },
   {
     path: "/add-post",
     element: (
-      <UserSideBar>
-        <AddPost />
-      </UserSideBar>
+      <StudentOnlyRoute>
+        <UserSideBar>
+          <AddPost />
+        </UserSideBar>
+      </StudentOnlyRoute>
     ),
   },
   {
     path: "/task-management",
     element: (
-      <>
+      <StudentOnlyRoute>
         <UserSideBar>
           <DndProvider backend={HTML5Backend}>
             <TaskManager />
           </DndProvider>
         </UserSideBar>
-      </>
+      </StudentOnlyRoute>
     ),
   },
 
   {
     path: "/setting",
     element: (
-      <UserSideBar>
-        <Setting />
-      </UserSideBar>
+      <StudentOnlyRoute>
+        <UserSideBar>
+          <Setting />
+        </UserSideBar>
+      </StudentOnlyRoute>
     ),
   },
   {
@@ -86,9 +104,47 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-{
+  
+  // Teacher Routes
+  {
+    path: "/teacher",
+    element: (
+      <TeacherOnlyRoute>
+        <TeacherSideBar />
+      </TeacherOnlyRoute>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <TeacherDashboard />,
+      },
+      {
+        path: "assignments",
+        element: <Assignments />,
+      },
+      {
+        path: "polls",
+        element: <Polls />,
+      },
+      {
+        path: "resources",
+        element: <Resources />,
+      },
+      {
+        path: "students",
+        element: <div>Students Management - Coming Soon</div>,
+      },
+    ],
+  },
+
+  // Admin Routes
+  {
     path: "/dashboard",
-    element: <AdminSideBar />,
+    element: (
+      <AdminOnlyRoute>
+        <AdminSideBar />
+      </AdminOnlyRoute>
+    ),
     children: [
       {
         path: "",
