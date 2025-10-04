@@ -35,7 +35,7 @@ const TeacherDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      const response = await fetch('/api/teacher/dashboard', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/teacher/dashboard`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
