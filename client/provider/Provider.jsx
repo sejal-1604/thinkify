@@ -18,8 +18,11 @@ const Provider = ({ children }) => {
 
     // Check authentication status on mount
     useEffect(() => {
-        const checkAuth = () => {
+        const checkAuth = async () => {
             try {
+                // Add small delay to ensure cookies are properly set
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
                 const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
                 const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
                 

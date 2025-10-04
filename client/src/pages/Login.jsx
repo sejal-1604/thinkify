@@ -49,6 +49,7 @@ const Login = () => {
         data
       );
       if (response.data.status) {
+        // Store tokens synchronously
         Cookies.set(import.meta.env.VITE_TOKEN_KEY, response.data.token, {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
@@ -57,12 +58,17 @@ const Login = () => {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
         });
+        
+        // Add small delay to ensure cookies are set before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Navigate based on role
         if (response.data.user.role === "student") {
-          navigate("/profile");
+          navigate("/profile", { replace: true });
         } else if (response.data.user.role === "teacher") {
-          navigate("/teacher/dashboard");
+          navigate("/teacher/dashboard", { replace: true });
         } else if (response.data.user.role === "admin") {
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         } else {
           setAlertBoxOpenStatus(true);
           setAlertSeverity("error");
@@ -87,21 +93,30 @@ const Login = () => {
 
   // check if user is already logged in
   useEffect(() => {
-    const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
-    const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
-    if (token && role) {
-      if (role === "student") {
-        navigate("/profile");
-      } else if (role === "teacher") {
-        navigate("/teacher/dashboard");
-      } else if (role === "admin") {
-        navigate("/dashboard");
+    const checkAuthAndRedirect = async () => {
+      const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
+      const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
+      
+      if (token && role) {
+        // Add small delay to prevent race conditions
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        if (role === "student") {
+          navigate("/profile", { replace: true });
+        } else if (role === "teacher") {
+          navigate("/teacher/dashboard", { replace: true });
+        } else if (role === "admin") {
+          navigate("/dashboard", { replace: true });
+        }
+      } else {
+        // Clean up any invalid cookies
+        Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
+        Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
       }
-    } else {
-      Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-      Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
-    }
-  }, []);
+    };
+
+    checkAuthAndRedirect();
+  }, [navigate]);
 
   return (
     <>
