@@ -68,8 +68,8 @@ const Login = () => {
         setUser({ role: response.data.user.role });
         setIsAuthenticated(true);
         
-        // Add delay to ensure cookies are set and context is updated
-        await new Promise(resolve => setTimeout(resolve, 150));
+        // Remove delay to prevent flashing - cookies are set synchronously
+        // await new Promise(resolve => setTimeout(resolve, 150));
         
         // Navigate based on role with replace to prevent back button issues
         const role = response.data.user.role;
@@ -109,23 +109,18 @@ const Login = () => {
 
   // check if user is already logged in
   useEffect(() => {
-    const checkAuthAndRedirect = async () => {
+    const checkAuthAndRedirect = () => {
       try {
-        // Add delay to ensure any logout cleanup is complete
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
+        // Remove delays to prevent flashing - check immediately
         const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
         const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
         
         if (token && role) {
-          // Update context state
+          // Update context state immediately
           setUser({ role });
           setIsAuthenticated(true);
           
-          // Add small delay to prevent race conditions
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Navigate based on role
+          // Navigate immediately based on role
           if (role === "student") {
             navigate("/profile", { replace: true });
           } else if (role === "teacher") {
