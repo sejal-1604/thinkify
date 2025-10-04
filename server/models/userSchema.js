@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
   },
   teacherId: {
     type: String,
-    required: function() { return this.role === 'teacher'; },
+    required: false,
     unique: true,
     sparse: true // Allows null values to be non-unique
   },
