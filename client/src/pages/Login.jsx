@@ -64,6 +64,13 @@ const Login = () => {
         Cookies.set(tokenKey, response.data.token, { expires, path: "/" });
         Cookies.set(userRoleKey, response.data.user.role, { expires, path: "/" });
         
+        // CRITICAL FIX: Also store in localStorage and sessionStorage for compatibility
+        // Some components are reading from these storages
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userRole', response.data.user.role);
+        sessionStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('userRole', response.data.user.role);
+        
         // Update Provider context immediately
         setUser({ role: response.data.user.role });
         setIsAuthenticated(true);
@@ -139,6 +146,22 @@ const Login = () => {
           Cookies.remove(roleKey, { path: "/" });
           Cookies.remove(tokenKey);
           Cookies.remove(roleKey);
+          
+          // CRITICAL FIX: Also clear localStorage and sessionStorage
+          // This prevents session persistence from previous users
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem(tokenKey);
+          localStorage.removeItem(roleKey);
+          
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('userRole');
+          sessionStorage.removeItem(tokenKey);
+          sessionStorage.removeItem(roleKey);
+          
+          // Clear all storage to be absolutely sure
+          localStorage.clear();
+          sessionStorage.clear();
           
           // Ensure context is cleared
           setUser(null);

@@ -62,7 +62,23 @@ const Provider = ({ children }) => {
             Cookies.remove(import.meta.env.VITE_TOKEN_KEY);
             Cookies.remove(import.meta.env.VITE_USER_ROLE);
             
-            // Remove delay to prevent flashing - cookies are cleared synchronously
+            // CRITICAL FIX: Clear localStorage and sessionStorage
+            // This was the missing piece causing session persistence!
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem(import.meta.env.VITE_TOKEN_KEY);
+            localStorage.removeItem(import.meta.env.VITE_USER_ROLE);
+            
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userRole');
+            sessionStorage.removeItem(import.meta.env.VITE_TOKEN_KEY);
+            sessionStorage.removeItem(import.meta.env.VITE_USER_ROLE);
+            
+            // Clear all localStorage and sessionStorage to be absolutely sure
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Remove delay to prevent flashing - all storage cleared synchronously
             // await new Promise(resolve => setTimeout(resolve, 100));
             
         } catch (error) {
