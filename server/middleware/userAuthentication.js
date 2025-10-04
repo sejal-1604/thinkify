@@ -13,7 +13,7 @@ const userAuthentication = async (req, res, next) => {
                 if (Types.ObjectId.isValid(userId)) {
 
                     const user = await UserModel.findById(userId).select("-password");
-                    if (user.role === "user") {
+                    if (user.role === "student") {
                         req.user = user
                         next();
                     } else {
