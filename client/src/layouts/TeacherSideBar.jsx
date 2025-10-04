@@ -26,7 +26,7 @@ import Footer from "./Footer";
 const TeacherSideBar = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
+  const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity, setLoadingStatus, logout } =
     useThinkify();
     
   const listData = [
@@ -58,12 +58,29 @@ const TeacherSideBar = ({ children }) => {
   ];
 
   const handleLogOut = async () => {
-    setAlertBoxOpenStatus(true);
-    setAlertSeverity("success");
-    setAlertMessage("Logged Out Successfully");
-    Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-    Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
-    navigate("/login");
+    try {
+      // Show loading state
+      setLoadingStatus(true);
+      
+      // Use the centralized logout function from Provider
+      await logout();
+      
+      // Show success message
+      setAlertBoxOpenStatus(true);
+      setAlertSeverity("success");
+      setAlertMessage("Logged Out Successfully");
+      
+      // Navigate to login after cleanup
+      navigate("/login", { replace: true });
+      
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setAlertBoxOpenStatus(true);
+      setAlertSeverity("error");
+      setAlertMessage("Logout failed. Please try again.");
+    } finally {
+      setLoadingStatus(false);
+    }
   };
 
   useEffect(() => {
