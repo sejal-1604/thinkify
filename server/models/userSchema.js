@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
   },
   teacherId: {
     type: String,
-    required: false,
+    required: false, // Make optional - can be added later if needed
     unique: true,
     sparse: true // Allows null values to be non-unique
   },
