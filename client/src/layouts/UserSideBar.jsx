@@ -74,11 +74,13 @@ const UserSideBar = ({ children }) => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
     if (token && role) {
-      if (role === "user") {
-        navigate("/profile");
-      } else if (role === "admin") {
+      // Only redirect if user is not student or not already on student routes
+      if (role === "admin") {
         navigate("/dashboard");
+      } else if (role === "teacher") {
+        navigate("/teacher/dashboard");
       }
+      // Don't redirect student users - they're already where they should be
     } else {
       Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
       Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
