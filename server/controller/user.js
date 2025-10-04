@@ -32,6 +32,9 @@ const registration = [
             if (role === 'teacher' && !department) {
                 return res.status(400).json({ status: false, message: "Department is required for teachers" });
             }
+            if (role === 'teacher' && !teacherId) {
+                return res.status(400).json({ status: false, message: "Teacher ID is required for teachers" });
+            }
             if (role === 'student' && !studentId) {
                 return res.status(400).json({ status: false, message: "Student ID is required for students" });
             }
