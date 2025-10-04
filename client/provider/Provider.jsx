@@ -18,41 +18,22 @@ const Provider = ({ children }) => {
 
     // Check authentication status on mount
     useEffect(() => {
-        const checkAuth = async () => {
+        const checkAuth = () => {
             try {
                 const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
                 const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
                 
                 if (token && role) {
-                    // Verify token with backend
-                    const response = await axios.get(
-                        `${import.meta.env.VITE_SERVER_ENDPOINT}/users/profile`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
-                        }
-                    );
-                    
-                    if (response.data.status) {
-                        setUser(response.data.user);
-                        setIsAuthenticated(true);
-                    } else {
-                        // Invalid token, clear cookies
-                        Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-                        Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
-                        setUser(null);
-                        setIsAuthenticated(false);
-                    }
+                    // For now, trust the cookies without backend verification to avoid conflicts
+                    // You can add backend verification later if needed
+                    setUser({ role: role });
+                    setIsAuthenticated(true);
                 } else {
                     setUser(null);
                     setIsAuthenticated(false);
                 }
             } catch (error) {
                 console.error("Auth check failed:", error);
-                // Clear invalid cookies
-                Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
-                Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
                 setUser(null);
                 setIsAuthenticated(false);
             } finally {
