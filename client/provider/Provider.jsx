@@ -18,8 +18,11 @@ const Provider = ({ children }) => {
 
     // Check authentication status on mount
     useEffect(() => {
-        const checkAuth = () => {
+        const checkAuth = async () => {
             try {
+                // Add small delay to ensure cookies are properly set
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
                 const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
                 const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
                 
@@ -44,6 +47,32 @@ const Provider = ({ children }) => {
         checkAuth();
     }, []);
 
+    // Logout function to clear all auth state
+    const logout = async () => {
+        try {
+            // Clear auth state immediately
+            setUser(null);
+            setIsAuthenticated(false);
+            setLoading(false);
+            
+            // Clear cookies with proper cleanup
+            Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
+            Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
+            
+            // Also try removing with different path configurations to ensure cleanup
+            Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "/" });
+            Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "/" });
+            Cookies.remove(import.meta.env.VITE_TOKEN_KEY);
+            Cookies.remove(import.meta.env.VITE_USER_ROLE);
+            
+            // Add delay to ensure cookies are fully cleared
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    };
+
     const contextValue = {
         alertBoxOpenStatus,
         setAlertBoxOpenStatus,
@@ -59,7 +88,9 @@ const Provider = ({ children }) => {
         isAuthenticated,
         setIsAuthenticated,
         loading,
-        setLoading
+        setLoading,
+        // Logout function
+        logout
     }
 
     return (
