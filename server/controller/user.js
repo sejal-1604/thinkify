@@ -18,7 +18,7 @@ const registration = [
                 return res.status(400).json({ status: false, message: errors.array()[0].msg });
             }
 
-            const { fullName, email, password } = req.body;
+            const { fullName, email, password, role, department, studentId, teacherId } = req.body;
             const existingUser = await UserModel.findOne({ email });
             if (existingUser) {
                 return res.status(400).json({ status: false, message: "User already exists" });
@@ -28,12 +28,23 @@ const registration = [
             const bcryptSalt = await bcrypt.genSalt(bcryptSaltRounds);
             const hashPassword = await bcrypt.hash(password, bcryptSalt);
 
+            // Validate role-specific fields
+            if (role === 'teacher' && !department) {
+                return res.status(400).json({ status: false, message: "Department is required for teachers" });
+            }
+            if (role === 'student' && !studentId) {
+                return res.status(400).json({ status: false, message: "Student ID is required for students" });
+            }
+
+            // Create user data object with role-specific fields
             const userData = new UserModel({
                 fullName,
                 email,
                 password: hashPassword,
-                createdAt: new Date(),
-                role: "user"
+                role: role || "student", // Default to student if no role provided
+                ...(role === 'teacher' && { department, teacherId }),
+                ...(role === 'student' && { studentId }),
+                createdAt: new Date()
             });
             const savedUser = await userData.save();
             if (savedUser) {
