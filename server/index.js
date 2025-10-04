@@ -19,7 +19,7 @@ app.use(
         origin: [
             "http://localhost:5173",
             "https://thinkify-frontend.vercel.app",
-            "https://thinkify-frontend-o6ku7ti5h-sejals-projects-c804ef4c.vercel.app/"
+            "https://thinkify-frontend-o6ku7ti5h-sejals-projects-c804ef4c.vercel.app"
         ],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
