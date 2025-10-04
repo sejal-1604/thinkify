@@ -14,15 +14,13 @@ const Provider = ({ children }) => {
     // Authentication state
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Start with false to prevent initial flash
 
     // Check authentication status on mount
     useEffect(() => {
-        const checkAuth = async () => {
+        const checkAuth = () => {
             try {
-                // Add small delay to ensure cookies are properly set
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
+                // Remove delay - check immediately to prevent flashing
                 const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
                 const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
                 
@@ -39,9 +37,8 @@ const Provider = ({ children }) => {
                 console.error("Auth check failed:", error);
                 setUser(null);
                 setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
             }
+            // No need to set loading to false since we start with false
         };
 
         checkAuth();
@@ -65,8 +62,8 @@ const Provider = ({ children }) => {
             Cookies.remove(import.meta.env.VITE_TOKEN_KEY);
             Cookies.remove(import.meta.env.VITE_USER_ROLE);
             
-            // Add delay to ensure cookies are fully cleared
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Remove delay to prevent flashing - cookies are cleared synchronously
+            // await new Promise(resolve => setTimeout(resolve, 100));
             
         } catch (error) {
             console.error("Logout error:", error);
